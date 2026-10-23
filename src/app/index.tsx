@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDocs, updateDoc } from "firebase/firestore";
 import { Alert, Button, Pressable, StyleSheet, Text, View } from "react-native";
 import { db } from "../../firebaseConfig";
 
@@ -30,6 +30,22 @@ export default function Index() {
     }
 
   }
+  function alterar() {
+    try {
+      const docRef = doc(db, 'produtos', 'EMBuiyMB3x4e0Fy98Ajv')
+      updateDoc(docRef, {
+        nome: 'Doritos',
+        codigoBarras: '12312312312'
+
+      })
+      Alert.alert("Deu certo em.")
+    }
+    catch (e) {
+      Alert.alert("Não funfou :(", String(e))
+    }
+
+  }
+
 
 
   return (
@@ -48,6 +64,11 @@ export default function Index() {
       <Pressable
         onPress={deletar}>
         <Text style={styles.texto}>Deletar produto</Text>
+      </Pressable>
+
+      <Pressable
+        onPress={alterar}>
+        <Text style={styles.texto}>Alterar produto</Text>
       </Pressable>
     </View>
   );
