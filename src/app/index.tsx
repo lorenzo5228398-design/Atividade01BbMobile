@@ -1,6 +1,6 @@
 import { router } from "expo-router";
-import { collection, getDocs } from "firebase/firestore";
-import { Button, Pressable, StyleSheet, Text, View } from "react-native";
+import { collection, deleteDoc, doc, getDocs } from "firebase/firestore";
+import { Alert, Button, Pressable, StyleSheet, Text, View } from "react-native";
 import { db } from "../../firebaseConfig";
 
 type produto = {
@@ -20,12 +20,22 @@ export default function Index() {
     })
 
   }
+  function deletar() {
+    try {
+      deleteDoc(doc(db, 'produtos', '0Pqp2KPVvHjs2BOZiFjS'))
+      Alert.alert("Funfou :)")
+    }
+    catch (e) {
+      Alert.alert("Não funfou :(", String(e))
+    }
+
+  }
 
 
   return (
     <View style={styles.container}>
       <Button
-        title="Listar Produtos"
+        title="Adicionar Produtos"
         color="#005b96"
         onPress={() => router.push('/telaProduto')}
       />
@@ -33,6 +43,11 @@ export default function Index() {
       <Pressable
         onPress={consultar}>
         <Text style={styles.texto}>Consultar</Text>
+      </Pressable>
+
+      <Pressable
+        onPress={deletar}>
+        <Text style={styles.texto}>Deletar produto</Text>
       </Pressable>
     </View>
   );
