@@ -1,74 +1,87 @@
-import { router } from "expo-router";
-import { collection, deleteDoc, doc, getDocs, updateDoc } from "firebase/firestore";
-import { Alert, Button, Pressable, StyleSheet, Text, View } from "react-native";
+import { useRouter } from "expo-router";
+import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from "firebase/firestore";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import { db } from "../../firebaseConfig";
 
-type produto = {
-
+type Produto = {
   nome: string,
   preco: number,
   unidade: string
-
 }
 
 export default function Index() {
+
+  function inserir() {
+    const prod = {
+      nome: 'Bergamota',
+      preco: 7.99,
+      unidade: 'KG'
+    }
+
+    try {
+      addDoc(collection(db, 'produtos'), prod);
+      Alert.alert('Produto inserido');
+    } catch (e) {
+      Alert.alert('Erro', String(e));
+    }
+  }
+
   async function consultar() {
     const querySnapshot = await getDocs(collection(db, 'produtos'))
     querySnapshot.docs.map((doc) => {
-      var prod = doc.data() as produto;
-      console.log(doc.id + "-" + prod.nome)
+      const prod = doc.data() as Produto;
+      console.log(doc.id + ' - ' + prod.nome)
     })
-
   }
-  function deletar() {
+
+  async function deletar() {
     try {
-      deleteDoc(doc(db, 'produtos', '0Pqp2KPVvHjs2BOZiFjS'))
-      Alert.alert("Funfou :)")
+      await deleteDoc(doc(db, 'produtos', 'gYkwhLMGQaWBAYhQchdC'))
+      Alert.alert('Produto removido')
+    } catch (e) {
+      Alert.alert('Erro', String(e))
     }
-    catch (e) {
-      Alert.alert("Não funfou :(", String(e))
-    }
-
   }
+
   function alterar() {
     try {
-      const docRef = doc(db, 'produtos', 'EMBuiyMB3x4e0Fy98Ajv')
+      const docRef = doc(db, 'produtos', 'sRBYziYyfNurCKMzsHUF')
       updateDoc(docRef, {
-        nome: 'Doritos',
-        codigoBarras: '12312312312'
-
+        nome: 'Ruffles Grande',
+        codBarras: '7891234567890'
       })
-      Alert.alert("Deu certo em.")
+    } catch (e) {
+      Alert.alert('Erro', String(e))
     }
-    catch (e) {
-      Alert.alert("Não funfou :(", String(e))
-    }
-
   }
 
-
+  const router = useRouter();
 
   return (
     <View style={styles.container}>
-      <Button
-        title="Adicionar Produtos"
-        color="#005b96"
-        onPress={() => router.push('/telaProduto')}
-      />
+      <Pressable
+        onPress={inserir}>
+        <Text style={styles.texto}>Inserir dado no banco</Text>
+      </Pressable>
 
       <Pressable
         onPress={consultar}>
-        <Text style={styles.texto}>Consultar</Text>
+        <Text style={styles.texto}>Consultar Produtos</Text>
       </Pressable>
 
       <Pressable
         onPress={deletar}>
-        <Text style={styles.texto}>Deletar produto</Text>
+        <Text style={styles.texto}>Deletar Produto</Text>
       </Pressable>
 
       <Pressable
         onPress={alterar}>
-        <Text style={styles.texto}>Alterar produto</Text>
+        <Text style={styles.texto}>Alterar Produto</Text>
+      </Pressable>
+
+      <Pressable
+        onPress={()=>{router.navigate('/consultar_produtos')}}>
+        <Text style={styles.texto}>Tela de Consulta</Text>
       </Pressable>
     </View>
   );
@@ -79,6 +92,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    gap: 15
   },
   texto: {
     fontSize: 20
